@@ -3,7 +3,7 @@
 ## Exemplo formato do arquivo de entrada:
 
 ### FIFO
-```
+```javascript
 7 // Numero de processos
 First In First Out //Algoritmo
 1, calculadora.exe, 1, 12, 0 //Processo
@@ -16,7 +16,7 @@ First In First Out //Algoritmo
 ```
 
 ### Round Robin
-```
+```javascript
 7 // Numero de processos
 Round Robin, 4 //Algoritmo, Quantum
 1, calculadora.exe, 1, 12, 0 //Processo
