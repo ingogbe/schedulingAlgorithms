@@ -75,6 +75,7 @@ public class FileController {
 		fileChooser.setFileFilter(filter);
 		
 		if(getChooseType() == CHOOSER_TYPE_LOAD) {
+			fileChooser.setDialogTitle("Selecione o arquivo de entrada do algoritmo");
 			if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 				file = fileChooser.getSelectedFile();
 				this.file = file;
@@ -86,6 +87,7 @@ public class FileController {
 			}
 		}
 		else if(getChooseType() == CHOOSER_TYPE_SAVE) {
+			fileChooser.setDialogTitle("Selecione o arquivo para salvar a saída do algoritmo");
 			if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 				file = fileChooser.getSelectedFile();
 				this.file = file;

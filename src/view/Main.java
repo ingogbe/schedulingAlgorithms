@@ -1,13 +1,13 @@
 package view;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.UnsupportedLookAndFeelException;
 
-import controller.file.FileController;
+import controller.file.ProcessController;
 import exception.file.FileException;
+import exception.process.ProcessStatusException;
 
 public class Main {
 	public static void main(String[] x) {
@@ -23,10 +23,11 @@ public class Main {
 			
 			for(int i = 1; i <= 10; i++)
 				ucFile.writeFile(i + " - " + content);
+			
+			ucFile.closeBuffer();
 			*/
 			
-			
-			
+			/*
 			FileController ucFile = new FileController(FileController.CHOOSER_TYPE_LOAD, false);
 			
 			File selectedFile = ucFile.chooseFile();
@@ -40,10 +41,15 @@ public class Main {
 			for(int i = 0; i < lines; i++) {
 				System.out.println(ucFile.readLine());
 			}
-			/*
-			*/
 			
 			ucFile.closeBuffer();
+			*/
+			
+			ProcessController pc = new ProcessController();
+			pc.loadFile();
+			pc.execute();
+			
+			
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -58,6 +64,8 @@ public class Main {
 		} catch (FileException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ProcessStatusException e) {
 			e.printStackTrace();
 		}
 		

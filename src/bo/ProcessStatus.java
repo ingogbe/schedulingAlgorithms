@@ -89,5 +89,23 @@ public class ProcessStatus {
 		}
 		
 	}
+
+	@Override
+	public String toString() {
+		if(getCurrentStatus() == NEW)
+			return "New";
+		else if(getCurrentStatus() == READY)
+			return "Ready";
+		else if(getCurrentStatus() == BLOCKED)
+			return "Blocked";
+		else if(getCurrentStatus() == TERMINATED)
+			return "Terminated";
+		else if(getCurrentStatus() == RUNNING)
+			return "Running";
+		else
+			return "Something is wrong";
+	}
+	
+	
 	
 }

@@ -39,7 +39,14 @@ public class SaveFile {
 	
 	//Other private functions
 	private void loadBuffer() throws IOException {
-		this.writer = new FileWriter(this.file.getAbsolutePath(), isAppend());
+		
+		String filename = this.file.getAbsolutePath();
+		
+		if(!filename.toLowerCase().endsWith(".txt")){
+			filename = filename + ".txt";
+		}
+		
+		this.writer = new FileWriter(filename, isAppend());
 		this.buffer = new BufferedWriter(this.writer);
 	}
 
