@@ -13,22 +13,50 @@ import exception.process.ProcessStatusException;
 
 public class FirstInFirstOut {
 	
-	private ArrayList<ProcessControlBlock> allArrayPCB;
+	private ArrayList<ProcessControlBlock> allPCB;
 	private ArrayList<ProcessControlBlock> executingPCBs;
 	private int currentTime;
-	private FileController ucFile;
+	private FileController fileController;
 	
-	public FirstInFirstOut(ArrayList<ProcessControlBlock> allArrayPCB) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, FileException, IOException {
-		this.allArrayPCB = allArrayPCB;
+	public FirstInFirstOut(ArrayList<ProcessControlBlock> allPCB) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, FileException, IOException {
+		this.allPCB = allPCB;
 		this.executingPCBs = new ArrayList<ProcessControlBlock>();
 		this.currentTime = 0;
 		
-		this.ucFile = new FileController(FileController.CHOOSER_TYPE_SAVE, true);
-		this.ucFile.chooseFile();
+		this.fileController = new FileController(FileController.CHOOSER_TYPE_SAVE, true);
+		this.fileController.chooseFile();
+	}
+	
+	public FileController getFileController() {
+		return this.fileController;
 	}
 
-	public ArrayList<ProcessControlBlock> getArrayPCB() {
-		return allArrayPCB;
+	public ArrayList<ProcessControlBlock> getAllPCB() {
+		return this.allPCB;
+	}
+	
+	public int getTotalAllPCBs() {
+		return this.allPCB.size();
+	}
+	
+	public int getTotalExecutingPCBs() {
+		return this.executingPCBs.size();
+	}
+	
+	public ArrayList<ProcessControlBlock> getExecutingPCBs() {
+		return this.executingPCBs;
+	}
+	
+	public ProcessControlBlock getExecutingPCB(int i) {
+		return this.executingPCBs.get(i);
+	}
+	
+	public void addExecutingPCB(ProcessControlBlock pcb) {
+		this.executingPCBs.add(pcb);
+	}
+	
+	public void removeExecutingPCB(ProcessControlBlock pcb) {
+		this.executingPCBs.remove(pcb);
 	}
 	
 	public int getCurrentTime() {
@@ -46,11 +74,11 @@ public class FirstInFirstOut {
 	public int checkForNewArrivals() throws ProcessStatusException {
 		int count = 0;
 		
-		for(ProcessControlBlock pcb: allArrayPCB) {
+		for(ProcessControlBlock pcb: getAllPCB()) {
 			if(pcb.isArrivalTime(getCurrentTime())) {
 				pcb.changeStatus(ProcessStatus.NEW_TO_READY);
 				
-				this.executingPCBs.add(pcb);
+				addExecutingPCB(pcb);
 				count++;
 			}
 		}
@@ -62,20 +90,16 @@ public class FirstInFirstOut {
 		ProcessControlBlock currentPCB = null;
 		int terminatedPCBs = 0;
 		
-		while(terminatedPCBs != allArrayPCB.size()) {
+		while(terminatedPCBs != getTotalAllPCBs()) {
 			
-			//Pra evitar checagem nova toda hora
-			if(this.executingPCBs.size() != allArrayPCB.size()) {
-				checkForNewArrivals();
-			}	
+			checkForNewArrivals();	
 			
-			write(currentTime, currentPCB);
+			write(getCurrentTime(), currentPCB);
 			
 			if(currentPCB != null) {
 				if(currentPCB.getBurstTimeLeft(getCurrentTime()) == 0){
 					currentPCB.changeStatus(ProcessStatus.RUNNING_TO_TERMINATED);
 					terminatedPCBs++;
-					this.executingPCBs.remove(currentPCB);
 				}
 				else{
 					currentPCB.incrementElapsedTime();
@@ -84,7 +108,7 @@ public class FirstInFirstOut {
 			
 			//Se não houver PCB atual ou ela estiver terminada, pega próxima PCB da fila
 			if(currentPCB == null || currentPCB.getCurrentStatus() == ProcessStatus.TERMINATED) {
-				for(ProcessControlBlock pcb: this.executingPCBs) {
+				for(ProcessControlBlock pcb: getExecutingPCBs()) {
 					if(pcb.getCurrentStatus() == ProcessStatus.READY) {
 						pcb.changeStatus(ProcessStatus.READY_TO_RUNNING);
 						currentPCB = pcb;
@@ -96,7 +120,7 @@ public class FirstInFirstOut {
 			incrementCurrentTime();
 		}
 		
-		ucFile.closeBuffer();
+		getFileController().closeBuffer();
 		
 	}
 	
@@ -115,18 +139,21 @@ public class FirstInFirstOut {
 		
 		line = line + "\tREADY[";
 		
-		for(int i = 0; i < this.executingPCBs.size(); i++){
-			if(i == this.executingPCBs.size() - 1){
-				line = line + this.executingPCBs.get(i).getId();
+		String executingArray = "";
+		for(int i = 0; i < getTotalExecutingPCBs(); i++){
+			
+			if(getExecutingPCB(i).getCurrentStatus() != ProcessStatus.TERMINATED) {
+				executingArray = executingArray + getExecutingPCB(i).getId();
 			}
-			else{
-				line = line + this.executingPCBs.get(i).getId() + ",";
+			
+			if(i != (getTotalExecutingPCBs() - 1) && !executingArray.isEmpty()){
+				executingArray = executingArray + ",";
 			}
 		}
 		
-		line = line + "]";
+		line = line + executingArray + "]";
 		
-		this.ucFile.writeFile(line);
+		getFileController().writeFile(line);
 		System.out.println(line);
 	}
 }

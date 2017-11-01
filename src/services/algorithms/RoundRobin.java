@@ -8,37 +8,63 @@ import javax.swing.UnsupportedLookAndFeelException;
 import bo.ProcessControlBlock;
 import bo.ProcessStatus;
 import controller.file.FileController;
+import exception.algorithms.RoundRobinException;
 import exception.file.FileException;
 import exception.process.ProcessStatusException;
 
 public class RoundRobin {
 	private int quantum;
-	private ArrayList<ProcessControlBlock> allArrayPCB;
+	private ArrayList<ProcessControlBlock> allPCB;
 	private ArrayList<ProcessControlBlock> executingPCBs;
 	private int currentTime;
 	private int currentQuantum;
-	private FileController ucFile;
+	private FileController fileController;
 	
-	public RoundRobin(int quantum, ArrayList<ProcessControlBlock> allArrayPCB) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, FileException, IOException{
+	public RoundRobin(int quantum, ArrayList<ProcessControlBlock> allPCB) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, FileException, IOException{
 		this.quantum = quantum;
-		this.allArrayPCB = allArrayPCB;
+		this.allPCB = allPCB;
 		this.executingPCBs = new ArrayList<ProcessControlBlock>();
 		this.currentTime = 0;
+		this.currentQuantum = 0;
 		
-		this.ucFile = new FileController(FileController.CHOOSER_TYPE_SAVE, true);
-		this.ucFile.chooseFile();
+		this.fileController = new FileController(FileController.CHOOSER_TYPE_SAVE, true);
+		this.fileController.chooseFile();
 	}
 	
-	public ArrayList<ProcessControlBlock> getArrayPCB() {
-		return allArrayPCB;
+	public FileController getFileController() {
+		return this.fileController;
+	}
+	
+	public ArrayList<ProcessControlBlock> getAllPCB() {
+		return this.allPCB;
+	}
+	
+	public int getTotalAllPCBs() {
+		return this.allPCB.size();
+	}
+	
+	public int getTotalExecutingPCBs() {
+		return this.executingPCBs.size();
+	}
+	
+	public ArrayList<ProcessControlBlock> getExecutingPCBs() {
+		return this.executingPCBs;
+	}
+	
+	public ProcessControlBlock getExecutingPCB(int i) {
+		return this.executingPCBs.get(i);
+	}
+	
+	public void removeExecutingPCB(ProcessControlBlock pcb) {
+		this.executingPCBs.remove(pcb);
+	}
+	
+	public void addExecutingPCB(ProcessControlBlock pcb) {
+		this.executingPCBs.add(pcb);
 	}
 	
 	public int getCurrentTime() {
-		return currentTime;
-	}
-
-	public void setCurrentTime(int currentTime) {
-		this.currentTime = currentTime;
+		return this.currentTime;
 	}
 	
 	public void incrementCurrentTime(){
@@ -50,25 +76,35 @@ public class RoundRobin {
 	}
 
 	public int getCurrentQuantum() {
-		return currentQuantum;
+		return this.currentQuantum;
 	}
-
-	public void setCurrentQuantum(int currentQuantum) {
-		this.currentQuantum = currentQuantum;
+	
+	public void resetCurrentQuantum() {
+		this.currentQuantum = 0;
 	}
 
 	public int getQuantum() {
-		return quantum;
+		return this.quantum;
+	}
+	
+	public void sendCurrentPCBToTheEndOfList(ProcessControlBlock currentPCB) {
+		removeExecutingPCB(currentPCB);
+		addExecutingPCB(currentPCB);
+	}
+	
+	public void executeProcessAtCurrentTime(ProcessControlBlock currentPCB) {
+		currentPCB.incrementElapsedTime();
+		incrementCurrentQuantum();
 	}
 	
 	public int checkForNewArrivals() throws ProcessStatusException {
 		int count = 0;
 		
-		for(ProcessControlBlock pcb: allArrayPCB) {
+		for(ProcessControlBlock pcb: getAllPCB()) {
 			if(pcb.isArrivalTime(getCurrentTime())) {
 				pcb.changeStatus(ProcessStatus.NEW_TO_READY);
 				
-				this.executingPCBs.add(pcb);
+				addExecutingPCB(pcb);
 				count++;
 			}
 		}
@@ -76,103 +112,70 @@ public class RoundRobin {
 		return count;
 	}
 	
-	public void execute() throws ProcessStatusException, FileException, IOException{
+	public ProcessControlBlock getAndExecuteNextPCB() throws ProcessStatusException {
+		ProcessControlBlock currentPCB = null;
+		
+		for(ProcessControlBlock pcb: getExecutingPCBs()) {
+			if(pcb.getCurrentStatus() == ProcessStatus.READY) {
+				resetCurrentQuantum();
+				
+				pcb.changeStatus(ProcessStatus.READY_TO_RUNNING);
+				currentPCB = pcb;
+				executeProcessAtCurrentTime(currentPCB);
+				
+				break;
+			}
+		}
+		
+		return currentPCB;
+	}
+	
+	public void execute() throws ProcessStatusException, FileException, IOException, RoundRobinException{
 		ProcessControlBlock currentPCB = null;
 		int terminatedPCBs = 0;
 		
-		while(terminatedPCBs != allArrayPCB.size()) {
+		while(terminatedPCBs != getTotalAllPCBs()) {
 			
-			//Pra evitar checagem nova toda hora
-			if(this.executingPCBs.size() != allArrayPCB.size()) {
-				checkForNewArrivals();
-			}	
-			
-			if(currentPCB == null && this.executingPCBs.size() > 0){
-				this.executingPCBs.get(0).changeStatus(ProcessStatus.READY_TO_RUNNING);
-				currentPCB = this.executingPCBs.get(0);
-				this.currentQuantum = 0;
+			if(currentPCB == null || currentPCB.getCurrentStatus() == ProcessStatus.TERMINATED) {
+				currentPCB = getAndExecuteNextPCB();
 			}
-			else if(currentPCB != null){
-				if(currentPCB.getBurstTimeLeft(this.currentTime) == 0){
+			else if(getCurrentQuantum() == getQuantum()){
+				if(currentPCB.getBurstTimeLeft(getCurrentTime()) == 0){
+					currentPCB.changeStatus(ProcessStatus.RUNNING_TO_TERMINATED);
+					terminatedPCBs++;
+				}
+				else {
+					currentPCB.changeStatus(ProcessStatus.RUNNING_TO_READY);
+					sendCurrentPCBToTheEndOfList(currentPCB);
+				}
+				
+				currentPCB = getAndExecuteNextPCB();
+			}
+			else if(currentPCB != null && currentPCB.getCurrentStatus() == ProcessStatus.RUNNING) {
+				if(currentPCB.getBurstTimeLeft(getCurrentTime()) == 0){
 					currentPCB.changeStatus(ProcessStatus.RUNNING_TO_TERMINATED);
 					terminatedPCBs++;
 					
-					this.executingPCBs.remove(currentPCB);
-					currentPCB = getNextPCB(currentPCB);
-					
-					if(currentPCB != null){
-						currentPCB.changeStatus(ProcessStatus.READY_TO_RUNNING);
-						this.currentQuantum = 0;
-					}
-				}
-				else if(currentQuantum == quantum){
-					currentPCB.changeStatus(ProcessStatus.RUNNING_TO_READY);
-					
-					currentPCB = getNextPCB(currentPCB);
-					
-					if(currentPCB != null){
-						currentPCB.changeStatus(ProcessStatus.READY_TO_RUNNING);
-						this.currentQuantum = 0;
-					}
+					currentPCB = getAndExecuteNextPCB();
 				}
 				else{
-					currentPCB.incrementElapsedTime();
-					incrementCurrentQuantum();
+					executeProcessAtCurrentTime(currentPCB);
 				}
 			}
+			else {
+				throw new RoundRobinException("Something went wrong, please verify your input!");
+			}
 			
-			write(this.currentTime, currentPCB);
+			//Verifica se algum processo novo chegou
+			checkForNewArrivals();
+			
+			write(getCurrentTime(), currentPCB);
+			
 			incrementCurrentTime();
 			
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 		
-		ucFile.closeBuffer();
-	}
-	
-	public ProcessControlBlock getNextPCB(ProcessControlBlock currentPCB){
-		
-		if(this.executingPCBs.size() == 1){
-			if(currentPCB.getCurrentStatus() == ProcessStatus.READY){
-				return currentPCB;
-			}
-			
-			return null;
-		}
-		else{
-			int number = -1;
-			
-			for(int i = 0; i < this.executingPCBs.size(); i++){
-				if(currentPCB.equals(this.executingPCBs.get(i))){
-					number = i;
-				}
-				
-				if(number != -1 && (this.executingPCBs.get(i).getCurrentStatus() == ProcessStatus.READY)){
-					return this.executingPCBs.get(i);
-				}
-			}
-			
-			if(number != -1){
-				for(int i = 0; i < number; i++){
-					if(this.executingPCBs.get(i).getCurrentStatus() == ProcessStatus.READY){
-						return this.executingPCBs.get(i);
-					}
-				}
-				
-				return null;
-			}
-			else if(currentPCB.getCurrentStatus() == ProcessStatus.READY){
-				return currentPCB;
-			}
-			else{
-				return null;
-			}
-		}
-		
+		getFileController().closeBuffer();
 	}
 	
 	public void write(int currentTime, ProcessControlBlock currentPCB) throws FileException, IOException{
@@ -190,18 +193,21 @@ public class RoundRobin {
 		
 		line = line + "\tREADY[";
 		
-		for(int i = 0; i < this.executingPCBs.size(); i++){
-			if(i == this.executingPCBs.size() - 1){
-				line = line + this.executingPCBs.get(i).getId();
+		String executingArray = "";
+		for(int i = 0; i < getTotalExecutingPCBs(); i++){
+			
+			if(getExecutingPCB(i).getCurrentStatus() != ProcessStatus.TERMINATED) {
+				executingArray = executingArray + getExecutingPCB(i).getId();
 			}
-			else{
-				line = line + this.executingPCBs.get(i).getId() + ",";
+			
+			if(i != (getTotalExecutingPCBs() - 1) && !executingArray.isEmpty()){
+				executingArray = executingArray + ",";
 			}
 		}
 		
-		line = line + "]";
+		line = line + executingArray + "]";
 		
-		this.ucFile.writeFile(line);
+		getFileController().writeFile(line);
 		System.out.println(line);
 	}
 }

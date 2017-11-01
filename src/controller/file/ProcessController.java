@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import bo.ProcessControlBlock;
+import exception.algorithms.RoundRobinException;
 import exception.file.FileException;
 import exception.process.ProcessStatusException;
 import services.algorithms.FirstInFirstOut;
@@ -97,7 +98,7 @@ public class ProcessController {
 		fc.closeBuffer();
 	}
 	
-	public void execute() throws ProcessStatusException, FileException, IOException {
+	public void execute() throws ProcessStatusException, FileException, IOException, RoundRobinException {
 		if(getAlgorithm() == FIFO){
 			this.fifo.execute();
 		}
