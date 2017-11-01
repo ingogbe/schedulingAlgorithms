@@ -1,0 +1,6 @@
+4
+First In First Out
+1, calculadora.exe, 1, 2, 0
+2, notepad.exe, 6, 7, 0
+3, eclipse.exe, 0, 5, 0
+4, chrome.exe, 6, 3, 0

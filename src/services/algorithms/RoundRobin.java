@@ -163,7 +163,7 @@ public class RoundRobin {
 				}
 			}
 			else {
-				throw new RoundRobinException("Something went wrong, please verify your input!");
+				throw new RoundRobinException("Something went wrong into Round Robin execution, please verify your input!");
 			}
 			
 			//Verifica se algum processo novo chegou

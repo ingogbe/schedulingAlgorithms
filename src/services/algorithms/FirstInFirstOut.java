@@ -8,6 +8,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import bo.ProcessControlBlock;
 import bo.ProcessStatus;
 import controller.file.FileController;
+import exception.algorithms.FirstInFirstOutException;
 import exception.file.FileException;
 import exception.process.ProcessStatusException;
 
@@ -85,38 +86,57 @@ public class FirstInFirstOut {
 		
 		return count;
 	}
+	
+	public void executeProcessAtCurrentTime(ProcessControlBlock currentPCB) {
+		currentPCB.incrementElapsedTime();
+	}
+	
+	public ProcessControlBlock getAndExecuteNextPCB() throws ProcessStatusException {
+		ProcessControlBlock currentPCB = null;
+		
+		for(ProcessControlBlock pcb: getExecutingPCBs()) {
+			if(pcb.getCurrentStatus() == ProcessStatus.READY) {
+				
+				pcb.changeStatus(ProcessStatus.READY_TO_RUNNING);
+				currentPCB = pcb;
+				executeProcessAtCurrentTime(currentPCB);
+				
+				break;
+			}
+		}
+		
+		return currentPCB;
+	}
 
-	public void execute() throws ProcessStatusException, FileException, IOException {
+	public void execute() throws ProcessStatusException, FileException, IOException, FirstInFirstOutException {
 		ProcessControlBlock currentPCB = null;
 		int terminatedPCBs = 0;
 		
 		while(terminatedPCBs != getTotalAllPCBs()) {
 			
-			checkForNewArrivals();	
-			
-			write(getCurrentTime(), currentPCB);
-			
-			if(currentPCB != null) {
+			//Se não houver PCB atual ou ela estiver terminada, pega próxima PCB da fila
+			if(currentPCB == null || currentPCB.getCurrentStatus() == ProcessStatus.TERMINATED) {
+				currentPCB = getAndExecuteNextPCB();
+			}
+			else if(currentPCB != null && currentPCB.getCurrentStatus() == ProcessStatus.RUNNING) {
 				if(currentPCB.getBurstTimeLeft(getCurrentTime()) == 0){
 					currentPCB.changeStatus(ProcessStatus.RUNNING_TO_TERMINATED);
 					terminatedPCBs++;
+					
+					currentPCB = getAndExecuteNextPCB();
 				}
 				else{
-					currentPCB.incrementElapsedTime();
+					executeProcessAtCurrentTime(currentPCB);
 				}
 			}
-			
-			//Se não houver PCB atual ou ela estiver terminada, pega próxima PCB da fila
-			if(currentPCB == null || currentPCB.getCurrentStatus() == ProcessStatus.TERMINATED) {
-				for(ProcessControlBlock pcb: getExecutingPCBs()) {
-					if(pcb.getCurrentStatus() == ProcessStatus.READY) {
-						pcb.changeStatus(ProcessStatus.READY_TO_RUNNING);
-						currentPCB = pcb;
-						break;
-					}
-				}
+			else {
+				throw new FirstInFirstOutException("Something went wrong into First In First Out execution, please verify your input!");
 			}
 		
+			checkForNewArrivals();
+			
+			write(getCurrentTime(), currentPCB);
+			
 			incrementCurrentTime();
 		}
 		
