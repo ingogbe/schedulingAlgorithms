@@ -52,7 +52,7 @@ Exemplo de arquivo de entrada para o algoritmo FIFO.
 
 ```javascript
 7 				// Numero de processos
-First In First Out, 0 	// Algoritmo desejado
+First In First Out, 0 		// Algoritmo desejado
 1, calculadora.exe, 1, 12, 0 	// Processo
 2, notepad.exe, 1, 4, 0 	// ID, Name, Arrival Time, Burst Time, Priority
 3, eclipse.exe, 4, 21, 0
