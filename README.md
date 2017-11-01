@@ -32,7 +32,7 @@ pc.execute();
 1. First In First Out (FIFO)
 2. Round Robin (RR)
 
-## Exemplo formato do arquivo de entrada:
+## Exemplo do formato do arquivo de entrada:
 
 Todos os arquivos de entrada seguem o mesmo modelo:
 
@@ -79,11 +79,11 @@ Round Robin, 4 			// Algoritmo, Quantum
 7, taskmgr.exe, 9, 13, 0
 ```
 
-## Exemplo formato do arquivo de saída:
+## Exemplo do formato do arquivo de saída:
 
 Todos os arquivos de saída seguem o mesmo modelo:
 
-> A `fila_atual` contém a fila atual do algoritmo de escalonamento utilizado, sempre com o processo sendo executado a frente.
+> A `fila_atual` contém a fila atual de processos prontos para executar do algoritmo de escalonamento utilizado, sempre com o processo sendo executado a frente.
 
 ```javascript
 tempo_atual	processo_atual	tempo_restante_processo_atual	fila_atual
