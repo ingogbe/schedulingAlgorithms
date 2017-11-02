@@ -19,7 +19,7 @@ Abra o Eclipse e adicione o projeto.
 
 Abra o arquivo `Main.java` e execute-o.
 
-Em seguida será solicitado para que seja selecionado o arquivo de entrada, e logo após o nome e local de onde deseja salvar o arquivo de saída.
+Em seguida será solicitado para que seja selecionado o arquivo de entrada (txt), e logo após o nome e local de onde deseja salvar o arquivo de saída (txt).
 
 ```java
 ProcessController pc = new ProcessController();
@@ -84,6 +84,7 @@ Round Robin, 4 			// Algoritmo, Quantum
 Todos os arquivos de saída seguem o mesmo modelo:
 
 > A `fila_atual` contém a fila atual de processos prontos para executar do algoritmo de escalonamento utilizado, sempre com o processo sendo executado a frente.
+> `X` e `N` são números inteiros quaisquer, correspondentes ao número de loops do algoritmo e o tempo de execução em milisegundos, respectivamente.
 
 ```javascript
 tempo_atual	processo_atual	tempo_restante_processo_atual	fila_atual
@@ -91,6 +92,9 @@ tempo_atual	processo_atual	tempo_restante_processo_atual	fila_atual
 .
 .
 tempo_atual	processo_atual	tempo_restante_processo_atual	fila_atual
+Tempo de execução:
+- X loops.
+- N milisegundos.
 ```
 
 ### Exemplo
@@ -102,19 +106,22 @@ Exemplo de arquivo de saída, modelo igual a de todos os algoritmos executados.
 1	P(3)	T_LEFT[4]	READY[3,1]
 2	P(3)	T_LEFT[3]	READY[3,1]
 3	P(3)	T_LEFT[2]	READY[3,1]
-4	P(3)	T_LEFT[1]	READY[3,1]
-5	P(3)	T_LEFT[0]	READY[3,1]
-6	P(1)	T_LEFT[1]	READY[1,2,4]
-7	P(1)	T_LEFT[0]	READY[1,2,4]
+4	P(1)	T_LEFT[1]	READY[1,3]
+5	P(1)	T_LEFT[0]	READY[1,3]
+6	P(3)	T_LEFT[1]	READY[3,2,4]
+7	P(3)	T_LEFT[0]	READY[3,2,4]
 8	P(2)	T_LEFT[6]	READY[2,4]
 9	P(2)	T_LEFT[5]	READY[2,4]
 10	P(2)	T_LEFT[4]	READY[2,4]
-11	P(2)	T_LEFT[3]	READY[2,4]
-12	P(2)	T_LEFT[2]	READY[2,4]
-13	P(2)	T_LEFT[1]	READY[2,4]
-14	P(2)	T_LEFT[0]	READY[2,4]
-15	P(4)	T_LEFT[2]	READY[4]
-16	P(4)	T_LEFT[1]	READY[4]
-17	P(4)	T_LEFT[0]	READY[4]
+11	P(4)	T_LEFT[2]	READY[4,2]
+12	P(4)	T_LEFT[1]	READY[4,2]
+13	P(4)	T_LEFT[0]	READY[4,2]
+14	P(2)	T_LEFT[3]	READY[2]
+15	P(2)	T_LEFT[2]	READY[2]
+16	P(2)	T_LEFT[1]	READY[2]
+17	P(2)	T_LEFT[0]	READY[2]
 18	P( )	T_LEFT[ ]	READY[]
+Tempo de execução:
+- 19 loops.
+- 4 milisegundos.
 ```

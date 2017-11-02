@@ -1,5 +1,5 @@
 4
-First In First Out, 0
+Round Robin, 3
 1, calculadora.exe, 1, 2, 0
 2, notepad.exe, 6, 7, 0
 3, eclipse.exe, 0, 5, 0

@@ -131,6 +131,8 @@ public class RoundRobin {
 	}
 	
 	public void execute() throws ProcessStatusException, FileException, IOException, RoundRobinException{
+		long tempoInicial = System.currentTimeMillis();
+		
 		ProcessControlBlock currentPCB = null;
 		int terminatedPCBs = 0;
 		
@@ -174,6 +176,10 @@ public class RoundRobin {
 			incrementCurrentTime();
 			
 		}
+		
+		getFileController().writeFile("Tempo de execução:");
+		getFileController().writeFile("- " + getCurrentTime() + " loops.");
+		getFileController().writeFile("- " + (System.currentTimeMillis() - tempoInicial) + " milisegundos.");
 		
 		getFileController().closeBuffer();
 	}

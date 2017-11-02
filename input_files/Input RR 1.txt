@@ -1,0 +1,9 @@
+7
+Round Robin, 3
+1, calculadora.exe, 1, 12, 0
+2, notepad.exe, 1, 4, 0
+3, eclipse.exe, 4, 21, 0
+4, chrome.exe, 3, 9, 0
+5, firefox.exe, 12, 10, 0
+6, sublime_text.exe, 7, 8, 0
+7, taskmgr.exe, 9, 13, 0

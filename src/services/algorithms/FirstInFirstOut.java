@@ -109,6 +109,8 @@ public class FirstInFirstOut {
 	}
 
 	public void execute() throws ProcessStatusException, FileException, IOException, FirstInFirstOutException {
+		long tempoInicial = System.currentTimeMillis();
+		
 		ProcessControlBlock currentPCB = null;
 		int terminatedPCBs = 0;
 		
@@ -139,6 +141,10 @@ public class FirstInFirstOut {
 			
 			incrementCurrentTime();
 		}
+		
+		getFileController().writeFile("Tempo de execução:");
+		getFileController().writeFile("- " + getCurrentTime() + " loops.");
+		getFileController().writeFile("- " + (System.currentTimeMillis() - tempoInicial) + " milisegundos.");
 		
 		getFileController().closeBuffer();
 		
