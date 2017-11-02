@@ -79,11 +79,14 @@ Round Robin, 4 			// Algoritmo, Quantum
 7, taskmgr.exe, 9, 13, 0
 ```
 
+Também pode-se visualizar arquivos de entrada exemplo [aqui](https://github.com/ingoguilherme/schedulingAlgorithms/tree/master/input_files).
+
 ## Exemplo do formato do arquivo de saída:
 
 Todos os arquivos de saída seguem o mesmo modelo:
 
 > A `fila_atual` contém a fila atual de processos prontos para executar do algoritmo de escalonamento utilizado, sempre com o processo sendo executado a frente.
+
 > `X` e `N` são números inteiros quaisquer, correspondentes ao número de loops do algoritmo e o tempo de execução em milisegundos, respectivamente.
 
 ```javascript
@@ -125,3 +128,5 @@ Tempo de execução:
 - 19 loops.
 - 4 milisegundos.
 ```
+
+Também pode-se visualizar arquivos de saída exemplo [aqui](https://github.com/ingoguilherme/schedulingAlgorithms/tree/master/output_files).
