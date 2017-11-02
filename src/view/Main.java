@@ -14,44 +14,10 @@ import exception.process.ProcessStatusException;
 public class Main {
 	public static void main(String[] x) {
 		
-		try {
-			/*
-			FileController ucFile = new FileController(FileController.CHOOSER_TYPE_SAVE, false);
-			
-			File selectedFile = ucFile.chooseFile();
-			System.out.println(selectedFile.getAbsolutePath());
-			
-			String content = "Teste";
-			
-			for(int i = 1; i <= 10; i++)
-				ucFile.writeFile(i + " - " + content);
-			
-			ucFile.closeBuffer();
-			*/
-			
-			
-			/*
-			FileController ucFile = new FileController(FileController.CHOOSER_TYPE_LOAD, false);
-			
-			File selectedFile = ucFile.chooseFile();
-			System.out.println(selectedFile.getAbsolutePath());
-			
-			int lines = ucFile.countLines();
-			System.out.println(lines);
-			
-			System.out.println("\nContent:\n");
-			
-			for(int i = 0; i < lines; i++) {
-				System.out.println(ucFile.readLine());
-			}
-			
-			ucFile.closeBuffer();
-			*/
-			
+		try {			
 			ProcessController pc = new ProcessController();
 			pc.loadFile();
-			pc.execute();
-			
+			pc.execute();		
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
