@@ -105,6 +105,7 @@ Tempo de execução:
 Exemplo de arquivo de saída, modelo igual a de todos os algoritmos executados.
 
 ```javascript
+Initializating Round Robin
 0	P( )	T_LEFT[ ]	READY[3]
 1	P(3)	T_LEFT[4]	READY[3,1]
 2	P(3)	T_LEFT[3]	READY[3,1]

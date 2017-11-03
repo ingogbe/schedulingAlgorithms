@@ -108,7 +108,7 @@ public class ProcessController {
 		}
 		else{
 			//TODO: Algoritmo não reconhecido
-			System.out.println("Algoritmo não reconhecido 2");
+			System.out.println("Algoritmo não reconhecido");
 		}
 	}
 	

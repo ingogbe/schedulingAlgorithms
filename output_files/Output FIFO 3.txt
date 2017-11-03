@@ -1,3 +1,4 @@
+Initializating First In First Out
 0	P( )	T_LEFT[ ]	READY[1,2,3,4,5]
 1	P(1)	T_LEFT[0]	READY[1,2,3,4,5]
 2	P(2)	T_LEFT[1]	READY[2,3,4,5]
